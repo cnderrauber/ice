@@ -348,7 +348,7 @@ func NewAgent(config *AgentConfig) (*Agent, error) {
 
 	mDNSMode := config.MulticastDNSMode
 	if mDNSMode == 0 {
-		mDNSMode = MulticastDNSModeQueryOnly
+		mDNSMode = MulticastDNSModeDisabled
 	}
 
 	loggerFactory := config.LoggerFactory
