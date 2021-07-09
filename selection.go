@@ -285,3 +285,26 @@ func (s *liteSelector) ContactCandidates() {
 		v.agent.validateSelectedPair()
 	}
 }
+
+// 从controlledSelector复制过来的，去掉了ping，增加ice重连
+func (s *liteSelector) HandleBindingRequest(m *stun.Message, local, remote Candidate) {
+	v, ok := s.pairCandidateSelector.(*controlledSelector)
+	if !ok {
+		return
+	}
+
+	p := v.agent.findPair(local, remote)
+	if p == nil {
+		p = v.agent.addPair(local, remote)
+	}
+
+	useCandidate := m.Contains(stun.AttrUseCandidate)
+	if useCandidate {
+		if selectedPair := v.agent.getSelectedPair(); selectedPair != p {
+			v.agent.setSelectedPair(p)
+		}
+		v.agent.sendBindingSuccess(m, local, remote)
+	} else {
+		v.agent.sendBindingSuccess(m, local, remote)
+	}
+}
